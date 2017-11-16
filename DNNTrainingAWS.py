@@ -151,7 +151,7 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
 
                 print "Epoch:", '%04d' % (epoch+1),"of",'%04d' % (hm_epochs), "cost=", "{:.9f}".format(avg_cost)
 
-
+            epoch+=1
 
 
             #with tf.gfile.Open(logs, 'a') as f:
