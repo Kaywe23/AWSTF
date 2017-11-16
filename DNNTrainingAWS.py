@@ -26,8 +26,8 @@ n_nodes_hl3 = 1500
 
 n_classes = 2
 batch_size = 100
-hm_epochs = 10
-datenanzahl = 100
+hm_epochs = 2
+datenanzahl = 50
 display_step = 1
 
 x = tf.placeholder('float')
@@ -100,15 +100,15 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
         sess.run(tf.global_variables_initializer())
         summary_writer = tf.summary.FileWriter(job_dir, graph=tf.get_default_graph())
         print('Start Training')
-        try:
-            epoch = int(tf.gfile.Open(logs,'r').read().split('\n')[-2])+1
-            print('START:',epoch)
-        except:
+        #try:
+            #epoch = int(tf.gfile.Open(logs,'r').read().split('\n')[-2])+1
+            #print('START:',epoch)
+        #except:
 
-            epoch = 1
+        epoch = 1
         for epoch in range(hm_epochs):
-            if epoch != 1:
-                saver.restore(sess,checkpoint)
+            #if epoch != 1:
+                #saver.restore(sess,checkpoint)
             avg_cost=0.
             batch_count=int(datenanzahl)
 
