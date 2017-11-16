@@ -106,7 +106,7 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
         #except:
 
         epoch = 1
-        for epoch in range(hm_epochs):
+        while epoch <= hm_epochs:
             #if epoch != 1:
                 #saver.restore(sess,checkpoint)
             avg_cost=0.
