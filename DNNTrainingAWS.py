@@ -27,7 +27,7 @@ n_nodes_hl3 = 1500
 n_classes = 2
 batch_size = 100
 hm_epochs = 2
-datenanzahl = 50
+datenanzahl = 10
 display_step = 1
 
 x = tf.placeholder('float')
@@ -91,10 +91,10 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
 
     init = tf.global_variables_initializer()
 
-    cost_summary = tf.summary.scalar("cost", cost)
+    #cost_summary = tf.summary.scalar("cost", cost)
     acc_summary = tf.summary.scalar("accuracy", accuracy)
 
-    summary_op = tf.summary.merge_all()
+    #summary_op = tf.summary.merge_all()
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
