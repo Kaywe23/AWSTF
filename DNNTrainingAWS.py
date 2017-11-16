@@ -26,8 +26,8 @@ n_nodes_hl3 = 1500
 
 n_classes = 2
 batch_size = 100
-hm_epochs = 2
-datenanzahl = 10
+hm_epochs = 3
+datenanzahl = 100
 display_step = 1
 
 x = tf.placeholder('float')
@@ -69,7 +69,7 @@ saver = tf.train.Saver()
 
 
 def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.csv',
-                         csv_file2='vector_test_converted.csv', job_dir='./tmp/DNNTraining2',
+                         csv_file2='vector_test_converted.csv', job_dir='./DNNTrainingAWS',
                          checkpoint='model.ckpt',logs='tf.log',**args):
 
     file_stream = file_io.FileIO(train_file, mode='r')
@@ -92,7 +92,7 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
     init = tf.global_variables_initializer()
 
     #cost_summary = tf.summary.scalar("cost", cost)
-    acc_summary = tf.summary.scalar("accuracy", accuracy)
+    #acc_summary = tf.summary.scalar("accuracy", accuracy)
 
     #summary_op = tf.summary.merge_all()
 
@@ -146,10 +146,10 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
                     if zaehler > datenanzahl:
                         print "Batch mit", datenanzahl, "Daten durchlaufen!"
                         break
-            saver.save(sess, checkpoint)
-            if epoch % display_step == 0:
+            #saver.save(sess, checkpoint)
+            #if epoch % display_step == 0:
 
-                print "Epoch:", '%04d' % (epoch+1),"of",'%04d' % (hm_epochs), "cost=", "{:.9f}".format(avg_cost)
+            print "Epoch:", '%04d' % (epoch),"of",'%04d' % (hm_epochs), "cost=", "{:.9f}".format(avg_cost)
 
             epoch+=1
 
