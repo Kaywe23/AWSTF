@@ -134,11 +134,10 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
                     _, c = sess.run([optimizer, cost],
                                              feed_dict={x: np.array(batch_x), y: np.array(batch_y)})
 
-                    if zaehler % 100 == 0:
-                        summary_str = sess.run(summary_op,
-                                               feed_dict={x: batch_x,y: batch_y})
-                        summary_writer.add_summary(summary_str, epoch*datenanzahl + zaehler)
-                        summary_writer.flush()
+                    #if zaehler % 100 == 0:
+                        #summary_str = sess.run(summary_op,feed_dict={x: batch_x,y: batch_y})
+                        #summary_writer.add_summary(summary_str, epoch*datenanzahl + zaehler)
+                        #summary_writer.flush()
 
                     #writer.add_summary(summary, epoch * datenanzahl + zaehler)
 
@@ -155,8 +154,8 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
 
 
 
-            with tf.gfile.Open(logs, 'a') as f:
-                f.write(str(epoch) + '\n')
+            #with tf.gfile.Open(logs, 'a') as f:
+                #f.write(str(epoch) + '\n')
 
         feature_sets = []
         labels = []
