@@ -98,7 +98,7 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        summary_writer = tf.summary.FileWriter(job_dir, graph=tf.get_default_graph())
+        #summary_writer = tf.summary.FileWriter(job_dir, graph=tf.get_default_graph())
         print('Start Training')
         #try:
             #epoch = int(tf.gfile.Open(logs,'r').read().split('\n')[-2])+1
@@ -107,8 +107,8 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
 
         epoch = 1
 
-            #if epoch != 1:
-                #saver.restore(sess,checkpoint)
+        #if epoch != 1:
+        saver.restore(sess,checkpoint)
         avg_cost=0.
         batch_count=int(datenanzahl)
 
@@ -146,15 +146,15 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
                 if zaehler > datenanzahl:
                     print "Batch mit", datenanzahl, "Daten durchlaufen!"
                     break
-            #saver.save(sess, checkpoint)
+            saver.save(sess, checkpoint)
             #if epoch % display_step == 0:
 
             print "Epoch:", '%04d' % (epoch),"of",'%04d' % (hm_epochs), "cost=", "{:.9f}".format(avg_cost)
 
         epoch = 2
 
-        # if epoch != 1:
-            # saver.restore(sess,checkpoint)
+
+        saver.restore(sess,checkpoint)
         avg_cost = 0.
         batch_count = int(datenanzahl)
 
@@ -192,7 +192,7 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
                 if zaehler > datenanzahl:
                     print "Batch mit", datenanzahl, "Daten durchlaufen!"
                     break
-            # saver.save(sess, checkpoint)
+            saver.save(sess, checkpoint)
             # if epoch % display_step == 0:
 
             print "Epoch:", '%04d' % (epoch), "of", '%04d' % (hm_epochs), "cost=", "{:.9f}".format(avg_cost)
