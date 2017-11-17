@@ -138,7 +138,7 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
                         summary_writer.add_summary(summary_str, epoch*datenanzahl + zaehler)
                         summary_writer.flush()
 
-                    writer.add_summary(summary, epoch * datenanzahl + zaehler)
+                    
 
                     avg_cost += c / datenanzahl
 
