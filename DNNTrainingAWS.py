@@ -26,7 +26,7 @@ n_nodes_hl3 = 1500
 
 n_classes = 2
 batch_size = 100
-hm_epochs = 3
+hm_epochs = 5
 datenanzahl = 100
 display_step = 1
 
@@ -91,115 +91,70 @@ def trainDNN(train_file='lexikon2.pickle',csv_file='train_converted_vermischt.cs
 
     init = tf.global_variables_initializer()
 
-    #cost_summary = tf.summary.scalar("cost", cost)
-    #acc_summary = tf.summary.scalar("accuracy", accuracy)
+    cost_summary = tf.summary.scalar("cost", cost)
+    acc_summary = tf.summary.scalar("accuracy", accuracy)
 
-    #summary_op = tf.summary.merge_all()
+    summary_op = tf.summary.merge_all()
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        #summary_writer = tf.summary.FileWriter(job_dir, graph=tf.get_default_graph())
+        summary_writer = tf.summary.FileWriter(job_dir, graph=tf.get_default_graph())
         print('Start Training')
-        #try:
-            #epoch = int(tf.gfile.Open(logs,'r').read().split('\n')[-2])+1
-            #print('START:',epoch)
-        #except:
+        try:
+            epoch = int(tf.gfile.Open(logs,'r').read().split('\n')[-2])+1
+            print('START:',epoch)
+        except:
+            epoch = 1
+        for epoch in range(hm_epochs):
+            if epoch != 1:
+                saver.restore(sess,checkpoint)
+            avg_cost=0.
+            batch_count=int(datenanzahl)
 
-        epoch = 1
+            with tf.gfile.Open(csv_file, 'rb') as gcs_file:
+                lines=gcs_file.readlines()
 
-        #if epoch != 1:
-        saver.restore(sess,checkpoint)
-        avg_cost=0.
-        batch_count=int(datenanzahl)
+                zaehler = 0
+                for zeile in lines:
+                    zaehler += 1
+                    label = zeile.split(':::')[0]
+                    tweet = zeile.split(':::')[1]
+                    woerter = word_tokenize(tweet.lower())
+                    woerter = [lemmatizer.lemmatize(i) for i in woerter]
+                    features = np.zeros(len(lexikon))
+                    for wort in woerter:
+                        if wort.lower() in lexikon:
+                            indexWert = lexikon.index(wort.lower())
+                            features[indexWert] += 1
 
-        with tf.gfile.Open(csv_file, 'rb') as gcs_file:
-            lines=gcs_file.readlines()
+                    batch_x = np.array([list(features)])
+                    batch_y = np.array([eval(label)])
 
-            zaehler = 0
-            for zeile in lines:
-                zaehler += 1
-                label = zeile.split(':::')[0]
-                tweet = zeile.split(':::')[1]
-                woerter = word_tokenize(tweet.lower())
-                woerter = [lemmatizer.lemmatize(i) for i in woerter]
-                features = np.zeros(len(lexikon))
-                for wort in woerter:
-                    if wort.lower() in lexikon:
-                        indexWert = lexikon.index(wort.lower())
-                        features[indexWert] += 1
-
-                batch_x = np.array([list(features)])
-                batch_y = np.array([eval(label)])
-
-                _, c = sess.run([optimizer, cost],
+                    _, c = sess.run([optimizer, cost],
                                              feed_dict={x: np.array(batch_x), y: np.array(batch_y)})
 
-                #if zaehler % 100 == 0:
-                    #summary_str = sess.run(summary_op,feed_dict={x: batch_x,y: batch_y})
-                    #summary_writer.add_summary(summary_str, epoch*datenanzahl + zaehler)
-                    #summary_writer.flush()
+                    if zaehler % 100 == 0:
+                        summary_str = sess.run(summary_op,feed_dict={x: batch_x,y: batch_y})
+                        summary_writer.add_summary(summary_str, epoch*datenanzahl + zaehler)
+                        summary_writer.flush()
 
-                #writer.add_summary(summary, epoch * datenanzahl + zaehler)
+                    writer.add_summary(summary, epoch * datenanzahl + zaehler)
 
-                avg_cost += c / datenanzahl
+                    avg_cost += c / datenanzahl
 
-                if zaehler > datenanzahl:
-                    print "Batch mit", datenanzahl, "Daten durchlaufen!"
-                    break
+                    if zaehler > datenanzahl:
+                        print "Batch mit", datenanzahl, "Daten durchlaufen!"
+                        break
             saver.save(sess, checkpoint)
-            #if epoch % display_step == 0:
+            if epoch % display_step == 0:
 
-            print "Epoch:", '%04d' % (epoch),"of",'%04d' % (hm_epochs), "cost=", "{:.9f}".format(avg_cost)
-
-        epoch = 2
+                print "Epoch:", '%04d' % (epoch+1),"of",'%04d' % (hm_epochs), "cost=", "{:.9f}".format(avg_cost)
 
 
-        saver.restore(sess,checkpoint)
-        avg_cost = 0.
-        batch_count = int(datenanzahl)
-
-        with tf.gfile.Open(csv_file, 'rb') as gcs_file:
-            lines = gcs_file.readlines()
-
-            zaehler = 0
-            for zeile in lines:
-                zaehler += 1
-                label = zeile.split(':::')[0]
-                tweet = zeile.split(':::')[1]
-                woerter = word_tokenize(tweet.lower())
-                woerter = [lemmatizer.lemmatize(i) for i in woerter]
-                features = np.zeros(len(lexikon))
-                for wort in woerter:
-                    if wort.lower() in lexikon:
-                        indexWert = lexikon.index(wort.lower())
-                        features[indexWert] += 1
-
-                batch_x = np.array([list(features)])
-                batch_y = np.array([eval(label)])
-
-                _, c = sess.run([optimizer, cost],
-                            feed_dict={x: np.array(batch_x), y: np.array(batch_y)})
-
-                # if zaehler % 100 == 0:
-                # summary_str = sess.run(summary_op,feed_dict={x: batch_x,y: batch_y})
-                # summary_writer.add_summary(summary_str, epoch*datenanzahl + zaehler)
-                # summary_writer.flush()
-
-                # writer.add_summary(summary, epoch * datenanzahl + zaehler)
-
-                avg_cost += c / datenanzahl
-
-                if zaehler > datenanzahl:
-                    print "Batch mit", datenanzahl, "Daten durchlaufen!"
-                    break
-            saver.save(sess, checkpoint)
-            # if epoch % display_step == 0:
-
-            print "Epoch:", '%04d' % (epoch), "of", '%04d' % (hm_epochs), "cost=", "{:.9f}".format(avg_cost)
 
 
-            #with tf.gfile.Open(logs, 'a') as f:
-                #f.write(str(epoch) + '\n')
+            with tf.gfile.Open(logs, 'a') as f:
+                f.write(str(epoch) + '\n')
 
         feature_sets = []
         labels = []
